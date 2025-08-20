@@ -1,65 +1,60 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Caixa MoveBuss</title>
-  <link rel="stylesheet" href="style.css"/>
+  <meta charset="UTF-8">
+  <title>Caixa MOVE Buss</title>
+  <script type="module" src="app.js"></script>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <header>
-    <img src="MOVE_BUSS_LOGO02.png" alt="Logo MoveBuss" class="logo"/>
-    <div id="user-badge"></div>
-    <button id="btn-logout" style="display:none">Logout</button>
-    <button id="btn-alterar-senha" style="display:none">Alterar Senha</button>
+    <img src="MOVE_BUSS_LOGO02.png" class="logo" alt="logo">
+    <div id="user-info"></div>
+    <button id="logoutBtn" style="display:none;">Logout</button>
   </header>
-  
-  <nav id="menu">
-    <button onclick="mostrarTela('abastecimento')">Abastecimento</button>
-    <button onclick="mostrarTela('relatorios')">Relatórios</button>
-  </nav>
 
   <main>
     <section id="login-section">
       <h2>Login</h2>
-      <input id="login-matricula" placeholder="Matrícula"/>
-      <input id="login-senha" type="password" placeholder="Senha"/>
-      <button onclick="login()">Entrar</button>
-      <p><a href="#" onclick="mostrarCadastro()">Cadastrar novo usuário</a></p>
+      <input type="text" id="loginMatricula" placeholder="Matrícula">
+      <input type="password" id="loginSenha" placeholder="Senha">
+      <button id="loginBtn">Entrar</button>
     </section>
 
-    <section id="cadastro-section" style="display:none">
-      <h2>Cadastro</h2>
-      <input id="cadastro-matricula" placeholder="Matrícula"/>
-      <input id="cadastro-nome" placeholder="Nome"/>
-      <input id="cadastro-senha" type="password" placeholder="Senha"/>
-      <button onclick="cadastrar()">Cadastrar</button>
-      <p><a href="#" onclick="mostrarLogin()">Já tenho conta</a></p>
+    <section id="register-section">
+      <h2>Registrar</h2>
+      <input type="text" id="regMatricula" placeholder="Matrícula">
+      <input type="text" id="regNome" placeholder="Nome">
+      <input type="password" id="regSenha" placeholder="Senha">
+      <button id="registerBtn">Cadastrar</button>
     </section>
 
-    <section id="abastecimento-section" style="display:none">
+    <section id="caixa-section" style="display:none;">
+      <h2>Caixa</h2>
+      <button id="abrirCaixaBtn">Abrir Caixa</button>
+      <button id="fecharCaixaBtn">Fechar Caixa</button>
+    </section>
+
+    <section id="abastecimento-section" style="display:none;">
       <h2>Registrar Abastecimento</h2>
       <label>Validador:
-        <select id="tipo-validador">
+        <select id="tipoValidador">
           <option value="PRODATA">PRODATA</option>
           <option value="DIGICON">DIGICON</option>
         </select>
-      </label><br/>
-      <label>Quantidade Bordos: <input id="qtd-bordos" type="number"/></label><br/>
-      <label>Valor (R$): <input id="valor" type="number" readonly/></label><br/>
-      <label>Prefixo: 55<input id="prefixo" maxlength="3"/></label><br/>
-      <label>Matrícula Motorista: <input id="matricula-motorista"/></label><br/>
-      <button onclick="salvarAbastecimento()">Salvar</button>
+      </label>
+      <label>Qtd. Bordos: <input type="number" id="bordos" min="1"></label>
+      <label>Valor R$: <input type="text" id="valor" readonly></label>
+      <label>Prefixo: 55<input type="text" id="prefixo" maxlength="3"></label>
+      <label>Data: <input type="date" id="data"></label>
+      <label>Matrícula Motorista: <input type="text" id="matMotorista"></label>
+      <button id="salvarAbastecimento">Salvar</button>
     </section>
 
-    <section id="relatorios-section" style="display:none">
-      <h2>Relatórios Diários</h2>
-      <label>Data: <input type="date" id="filtro-data"/></label>
-      <button onclick="carregarRelatorios()">Buscar</button>
-      <div id="relatorios-lista"></div>
+    <section id="relatorios-section" style="display:none;">
+      <h2>Relatórios</h2>
+      <div id="lista-relatorios"></div>
     </section>
   </main>
-
-  <script type="module" src="app.js"></script>
 </body>
 </html>

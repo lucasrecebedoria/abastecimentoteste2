@@ -1,6 +1,6 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, updatePassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, collection, addDoc, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, updateProfile, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, collection, addDoc, getDocs, doc, setDoc, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyC9L4GAbCGX9ySB_SYUJYjTKLmaw8bEXBc",
@@ -16,113 +16,108 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-const admins = ["4144","70029","6266"];
+// Registrar
+document.getElementById("registerBtn").addEventListener("click", async () => {
+  const matricula = document.getElementById("regMatricula").value;
+  const nome = document.getElementById("regNome").value;
+  const senha = document.getElementById("regSenha").value;
+  const emailFake = matricula + "@movebuss.local";
 
-function getDataDia(dateObj=new Date()) {
-  const ano = dateObj.getFullYear();
-  const mes = String(dateObj.getMonth()+1).padStart(2,"0");
-  const dia = String(dateObj.getDate()).padStart(2,"0");
-  return `${ano}-${mes}-${dia}`;
-}
+  const cred = await createUserWithEmailAndPassword(auth, emailFake, senha);
+  await updateProfile(cred.user, { displayName: matricula });
 
-async function cadastrar(){
-  const matricula = document.getElementById("cadastro-matricula").value;
-  const nome = document.getElementById("cadastro-nome").value;
-  const senha = document.getElementById("cadastro-senha").value;
-  const emailFake = matricula+"@movebuss.local";
-  await createUserWithEmailAndPassword(auth, emailFake, senha);
-  alert("Usuário cadastrado! Faça login.");
-  mostrarLogin();
-}
+  await setDoc(doc(db, "usuarios", matricula), {
+    matricula,
+    nome,
+    createdAt: serverTimestamp()
+  });
+});
 
-async function login(){
-  const matricula = document.getElementById("login-matricula").value;
-  const senha = document.getElementById("login-senha").value;
-  const emailFake = matricula+"@movebuss.local";
+// Login
+document.getElementById("loginBtn").addEventListener("click", async () => {
+  const matricula = document.getElementById("loginMatricula").value;
+  const senha = document.getElementById("loginSenha").value;
+  const emailFake = matricula + "@movebuss.local";
   await signInWithEmailAndPassword(auth, emailFake, senha);
-}
+});
 
-function logout(){
-  signOut(auth);
-}
+// Auth state
+onAuthStateChanged(auth, async (user) => {
+  if (user) {
+    document.getElementById("login-section").style.display = "none";
+    document.getElementById("register-section").style.display = "none";
+    document.getElementById("caixa-section").style.display = "block";
+    document.getElementById("logoutBtn").style.display = "block";
 
-onAuthStateChanged(auth, (user)=>{
-  if(user){
-    document.getElementById("login-section").style.display="none";
-    document.getElementById("cadastro-section").style.display="none";
-    document.getElementById("btn-logout").style.display="inline";
-    document.getElementById("btn-alterar-senha").style.display="inline";
-    mostrarTela('abastecimento');
-    const matricula = user.email.split("@")[0];
-    const badge = admins.includes(matricula) ? '<span style="background:gold;padding:5px;border-radius:5px">'+matricula+'</span>' : '<span style="background:green;padding:5px;border-radius:5px">'+matricula+'</span>';
-    document.getElementById("user-badge").innerHTML = badge;
+    const matricula = user.displayName;
+    verificarCaixa(matricula);
   } else {
-    mostrarLogin();
+    document.getElementById("login-section").style.display = "block";
+    document.getElementById("register-section").style.display = "block";
+    document.getElementById("caixa-section").style.display = "none";
+    document.getElementById("abastecimento-section").style.display = "none";
+    document.getElementById("logoutBtn").style.display = "none";
   }
 });
 
-async function salvarAbastecimento(){
-  const user = auth.currentUser;
-  if(!user) return;
-  const matriculaRecebedor = user.email.split("@")[0];
-  const tipo = document.getElementById("tipo-validador").value;
-  const qtd = parseInt(document.getElementById("qtd-bordos").value);
-  const valor = qtd*5;
-  const prefixo = "55"+document.getElementById("prefixo").value;
-  const motorista = document.getElementById("matricula-motorista").value;
-  const dataDia = getDataDia();
-  await addDoc(collection(db,"relatorios"),{
-    matriculaRecebedor: matriculaRecebedor,
-    tipoValidador: tipo,
-    qtdBordos: qtd,
-    valor: valor,
-    prefixo: prefixo,
-    matriculaMotorista: motorista,
-    dataDia: dataDia,
-    criadoEm: new Date()
-  });
-  alert("Salvo no relatório diário!");
-}
+document.getElementById("logoutBtn").addEventListener("click", async () => {
+  await signOut(auth);
+});
 
-async function carregarRelatorios(){
+// Abrir caixa
+document.getElementById("abrirCaixaBtn").addEventListener("click", async () => {
   const user = auth.currentUser;
-  if(!user) return;
-  const matricula = user.email.split("@")[0];
-  const filtroData = document.getElementById("filtro-data").value || getDataDia();
-  let q;
-  if(admins.includes(matricula)){
-    q = query(collection(db,"relatorios"), where("dataDia","==",filtroData));
+  if (!user) return;
+  await setDoc(doc(db, "usuarios", user.displayName, "caixaAtual", "status"), {
+    aberto: true,
+    abertura: serverTimestamp()
+  });
+  verificarCaixa(user.displayName);
+});
+
+// Fechar caixa
+document.getElementById("fecharCaixaBtn").addEventListener("click", async () => {
+  const user = auth.currentUser;
+  if (!user) return;
+  await setDoc(doc(db, "usuarios", user.displayName, "caixaAtual", "status"), {
+    aberto: false,
+    fechamento: serverTimestamp()
+  });
+  verificarCaixa(user.displayName);
+});
+
+// Verificar caixa
+async function verificarCaixa(matricula) {
+  const ref = doc(db, "usuarios", matricula, "caixaAtual", "status");
+  const snap = await getDoc(ref);
+  if (snap.exists() && snap.data().aberto) {
+    document.getElementById("abastecimento-section").style.display = "block";
   } else {
-    q = query(collection(db,"relatorios"), where("matriculaRecebedor","==",matricula), where("dataDia","==",filtroData));
+    document.getElementById("abastecimento-section").style.display = "none";
   }
-  const snap = await getDocs(q);
-  let html="";
-  let resumo={};
-  snap.forEach(doc=>{
-    const d=doc.data();
-    html += `<div>${d.tipoValidador} | ${d.qtdBordos} bordos | R$${d.valor} | Motorista: ${d.matriculaMotorista}</div>`;
-    if(!resumo[d.matriculaRecebedor]) resumo[d.matriculaRecebedor]=0;
-    resumo[d.matriculaRecebedor]+=d.valor;
+}
+
+// Calcular valor automático
+document.getElementById("bordos").addEventListener("input", () => {
+  const qtd = parseInt(document.getElementById("bordos").value || 0);
+  document.getElementById("valor").value = qtd * 5;
+});
+
+// Salvar abastecimento
+document.getElementById("salvarAbastecimento").addEventListener("click", async () => {
+  const user = auth.currentUser;
+  if (!user) return;
+  const matricula = user.displayName;
+
+  await addDoc(collection(db, "usuarios", matricula, "abastecimentos"), {
+    tipoValidador: document.getElementById("tipoValidador").value,
+    bordos: parseInt(document.getElementById("bordos").value),
+    valor: parseInt(document.getElementById("valor").value),
+    prefixo: "55" + document.getElementById("prefixo").value,
+    data: document.getElementById("data").value,
+    motorista: document.getElementById("matMotorista").value,
+    recebedor: matricula,
+    createdAt: serverTimestamp()
   });
-  html+="<hr/><b>Resumo:</b><br/>";
-  for(const mat in resumo){
-    html+=mat+": R$"+resumo[mat]+"<br/>";
-  }
-  document.getElementById("relatorios-lista").innerHTML=html;
-}
-
-function mostrarTela(tela){
-  document.getElementById("abastecimento-section").style.display="none";
-  document.getElementById("relatorios-section").style.display="none";
-  if(tela==='abastecimento') document.getElementById("abastecimento-section").style.display="block";
-  if(tela==='relatorios') document.getElementById("relatorios-section").style.display="block";
-}
-
-function mostrarCadastro(){
-  document.getElementById("login-section").style.display="none";
-  document.getElementById("cadastro-section").style.display="block";
-}
-function mostrarLogin(){
-  document.getElementById("login-section").style.display="block";
-  document.getElementById("cadastro-section").style.display="none";
-}
+  alert("Abastecimento registrado!");
+});

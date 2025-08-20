@@ -1,12 +1,21 @@
 body {
-  background: radial-gradient(circle, #111 0%, #333 100%);
-  color: #fff;
+  background: linear-gradient(135deg, black, #333);
+  color: white;
   font-family: Arial, sans-serif;
 }
-.logo { height: 60px; }
-#menu button {
-  margin: 5px; padding: 10px 20px;
-  background: green; border: none;
-  border-radius: 8px; cursor: pointer;
+.logo {
+  height: 60px;
 }
-#menu button:hover { transform: scale(1.05); }
+button {
+  background: green;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  margin: 5px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+button:hover {
+  transform: scale(1.1);
+}
