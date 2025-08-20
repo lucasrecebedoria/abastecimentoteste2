@@ -1,0 +1,59 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "caixas",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "matRecebedor", "order": "ASCENDING" },
+        { "fieldPath": "createdAt", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "abastecimentos",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "matRecebedor", "order": "ASCENDING" },
+        { "fieldPath": "data", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "sangrias",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "matRecebedor", "order": "ASCENDING" },
+        { "fieldPath": "status", "order": "ASCENDING" },
+        { "fieldPath": "createdAt", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "relatorios",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "matRecebedor", "order": "ASCENDING" },
+        { "fieldPath": "data", "order": "DESCENDING" }
+      ]
+    }
+  ],
+  "fieldOverrides": [
+    {
+      "collectionGroup": "caixas",
+      "fieldPath": "descricao",
+      "indexes": []
+    },
+    {
+      "collectionGroup": "abastecimentos",
+      "fieldPath": "observacao",
+      "indexes": []
+    },
+    {
+      "collectionGroup": "sangrias",
+      "fieldPath": "observacao",
+      "indexes": []
+    },
+    {
+      "collectionGroup": "relatorios",
+      "fieldPath": "detalhes",
+      "indexes": []
+    }
+  ]
+}

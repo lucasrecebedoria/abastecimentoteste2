@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Caixa • MoveBuss</title>
+  <link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+  <div class="topbar no-print">
+    <div class="logo" style="margin:0"><img src="assets/MOVE_BUSS_LOGO02.png" alt="MoveBuss" style="height:42px"/></div>
+    <div class="user-tag">
+      <span id="userBadge" class="badge">...</span>
+      <button class="btn secondary" id="btnChangePass">Alterar senha</button>
+      <button class="btn secondary" id="btnLogout">Sair</button>
+    </div>
+  </div>
+
+  <div class="sidebar no-print">
+    <button class="menu-toggle" onclick="toggleMenu()">☰</button>
+    <div class="menu" id="menu">
+      <a href="#" onclick="showSection('abastecimento')">Registrar abastecimento</a>
+      <a href="#" onclick="showSection('relatorios')">Relatórios</a>
+      <a href="#" onclick="showSection('sangria')">Sangria</a>
+      <a href="#" onclick="showSection('admin')">Admin</a>
+    </div>
+  </div>
+
+  <div class="container">
+    <div id="abastecimento" class="section">
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <h2>Caixa</h2>
+          <div>
+            <button id="btnAbrir" class="btn">Abrir caixa</button>
+            <button id="btnFechar" class="btn secondary">Fechar caixa</button>
+          </div>
+        </div>
+
+        <div id="statusCaixa" class="footer-note">Verificando status do caixa...</div>
+        <hr style="border-color:#2a2a2a;margin:16px 0"/>
+
+        <h3>Novo abastecimento</h3>
+        <div class="grid grid-3">
+          <div>
+            <label>Tipo de validador</label>
+            <select id="tipoValidador" class="input">
+              <option value="PRODATA">PRODATA</option>
+              <option value="DIGICON">DIGICON</option>
+            </select>
+          </div>
+          <div>
+            <label>Quantidade de bordos</label>
+            <input id="qtdBordos" type="number" min="1" class="input"/>
+          </div>
+          <div>
+            <label>Valor R$ (auto)</label>
+            <input id="valor" class="input" disabled/>
+          </div>
+          <div>
+            <label>Prefixo</label>
+            <div style="display:flex;gap:8px;align-items:center">
+              <div class="chip">55</div>
+              <input id="prefixo3" maxlength="3" class="input" placeholder="3 dígitos"/>
+            </div>
+          </div>
+          <div>
+            <label>Data</label>
+            <input id="data" type="date" class="input"/>
+          </div>
+          <div>
+            <label>Matrícula motorista</label>
+            <input id="matMotorista" class="input"/>
+          </div>
+          <div>
+            <label>Matrícula recebedor</label>
+            <input id="matRecebedor" class="input" disabled/>
+          </div>
+        </div>
+        <div style="margin-top:14px">
+          <button id="btnSalvarAbast" class="btn">Salvar e imprimir recibo</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="sangria" class="section hidden">
+      <div class="card">
+        <h2>Sangria</h2>
+        <p class="footer-note">Disponível apenas com caixa aberto. Enviaremos uma solicitação para aprovação de um admin.</p>
+        <div class="grid grid-2">
+          <input id="valorSangria" type="number" class="input" placeholder="Valor a ser sangrado"/>
+          <input id="motivoSangria" class="input" placeholder="Motivo da sangria"/>
+        </div>
+        <div style="margin-top:12px">
+          <button class="btn" id="btnSolicitarSangria">Solicitar sangria</button>
+        </div>
+        <div id="sangriaStatus" class="footer-note" style="margin-top:10px"></div>
+      </div>
+    </div>
+
+    <div id="relatorios" class="section hidden">
+      <div class="card">
+        <h2>Relatórios</h2>
+        <div class="grid grid-3">
+          <div>
+            <label>Filtrar por data</label>
+            <input id="filtroData" type="date" class="input"/>
+          </div>
+          <div>
+            <label>&nbsp;</label>
+            <button class="btn secondary" id="btnAplicarFiltro">Aplicar filtro</button>
+          </div>
+        </div>
+        <div id="listaRelatorios" style="margin-top:14px"></div>
+      </div>
+    </div>
+
+    <div id="admin" class="section hidden">
+      <div class="card">
+        <h2>Painel Admin</h2>
+        <div id="pendSangrias"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/firebase.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    function toggleMenu(){document.getElementById('menu').classList.toggle('open')}
+    function showSection(id){
+      for(const s of document.querySelectorAll('.section')) s.classList.add('hidden');
+      document.getElementById(id).classList.remove('hidden');
+      document.getElementById('menu').classList.remove('open');
+    }
+  </script>
+</body>
+</html>

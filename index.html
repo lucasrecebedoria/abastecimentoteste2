@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Login • MoveBuss Caixa</title>
+  <link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+  <div class="sidebar">
+    <button class="menu-toggle btn secondary no-print" onclick="toggleMenu()">☰</button>
+    <div class="menu" id="menu"><a href="register.html">Cadastrar usuário</a></div>
+  </div>
+  <div class="container">
+    <div class="logo"><img src="assets/MOVE_BUSS_LOGO02.png" alt="MoveBuss"/></div>
+    <div class="card" style="max-width:520px;margin:auto">
+      <h1>Entrar</h1>
+      <p class="footer-note">Use sua <b>matrícula</b> e senha. Após logar, você permanecerá conectado até realizar logout.</p>
+      <div class="grid">
+        <input id="matricula" class="input" placeholder="Matrícula" autocomplete="username"/>
+        <input id="senha" type="password" class="input" placeholder="Senha" autocomplete="current-password"/>
+        <button class="btn" onclick="login()">Entrar</button>
+        <a href="register.html">Não tem conta? Cadastre-se</a>
+      </div>
+    </div>
+  </div>
+  <script src="js/firebase.js"></script>
+  <script src="js/auth.js"></script>
+  <script>
+    function toggleMenu(){document.getElementById('menu').classList.toggle('open')}
+  </script>
+</body>
+</html>

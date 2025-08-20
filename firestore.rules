@@ -1,0 +1,36 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Usuários: cada usuário só pode ler/editar seu próprio documento, admins podem tudo
+    match /usuarios/{uid} {
+      allow read, update, delete: if request.auth != null && (request.auth.uid == uid || request.auth.token.admin == true);
+      allow create: if request.auth != null;
+    }
+
+    // Caixas: usuário só acessa o próprio, admin acessa todos
+    match /caixas/{docId} {
+      allow read, create, update: if request.auth != null && (request.resource.data.matRecebedor == request.auth.token.mat || request.auth.token.admin == true);
+      allow delete: if request.auth != null && request.auth.token.admin == true;
+    }
+
+    // Abastecimentos
+    match /abastecimentos/{docId} {
+      allow read, create, update: if request.auth != null && (request.resource.data.matRecebedor == request.auth.token.mat || request.auth.token.admin == true);
+      allow delete: if request.auth != null && request.auth.token.admin == true;
+    }
+
+    // Sangrias: só admins autorizam
+    match /sangrias/{docId} {
+      allow create: if request.auth != null;
+      allow update, delete: if request.auth != null && request.auth.token.admin == true;
+      allow read: if request.auth != null && (request.auth.token.mat == resource.data.matRecebedor || request.auth.token.admin == true);
+    }
+
+    // Relatórios
+    match /relatorios/{docId} {
+      allow read, create: if request.auth != null && (request.resource.data.matRecebedor == request.auth.token.mat || request.auth.token.admin == true);
+      allow update, delete: if request.auth != null && request.auth.token.admin == true;
+    }
+  }
+}

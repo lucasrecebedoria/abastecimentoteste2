@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Cadastrar • MoveBuss Caixa</title>
+  <link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+  <div class="container">
+    <div class="logo"><img src="assets/MOVE_BUSS_LOGO02.png" alt="MoveBuss"/></div>
+    <div class="card" style="max-width:640px;margin:auto">
+      <h1>Novo usuário</h1>
+      <div class="grid grid-2">
+        <input id="matricula" maxlength="8" class="input" placeholder="Matrícula"/>
+        <input id="nome" class="input" placeholder="Nome completo"/>
+        <input id="senha" type="password" class="input" placeholder="Senha"/>
+        <input id="senha2" type="password" class="input" placeholder="Confirmar senha"/>
+      </div>
+      <div style="margin-top:16px" class="grid">
+        <button class="btn" onclick="register()">Cadastrar</button>
+        <a href="index.html">Já tenho conta</a>
+      </div>
+    </div>
+  </div>
+  <script src="js/firebase.js"></script>
+  <script src="js/auth.js"></script>
+</body>
+</html>
